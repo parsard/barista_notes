@@ -36,9 +36,9 @@ dependencies:
   drift_flutter:
   path_provider:
   sqlite3_flutter_libs:
-
+  flutter_localization:
   cupertino_icons: ^1.0.8
-
+  persian_fonts:
 dev_dependencies:
   flutter_test:
     sdk: flutter

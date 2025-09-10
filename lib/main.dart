@@ -1,6 +1,8 @@
 import 'package:barista_notes/features/pos/presentation/providers/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:persian_fonts/persian_fonts.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -12,12 +14,26 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      supportedLocales: const [Locale('fa', 'IR')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      locale: const Locale('fa', 'IR'),
+      builder: (context, child) {
+        return Directionality(textDirection: TextDirection.rtl, child: child!);
+      },
+
       title: 'POS App',
       theme: ThemeData(
+        fontFamily: PersianFonts.Yekan.fontFamily,
+        textTheme: PersianFonts.vazirTextTheme,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'POS Home Page'),
+      home: const MyHomePage(title: 'صفحه اصلی'),
     );
   }
 }

@@ -1,6 +1,8 @@
+import 'package:barista_notes/features/pos/data/repositories/product_repository_impl.dart';
 import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:barista_notes/features/pos/domain/usecases/products/update_products_usecase.dart';
 import 'package:barista_notes/features/pos/domain/usecases/products/watch_all_products.dart';
+import 'package:barista_notes/features/pos/presentation/composition_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/usecases/products/get_all_products_usecase.dart';
@@ -10,7 +12,7 @@ import '../../domain/usecases/products/delete_product_usecase.dart';
 import '../../domain/repositories/products_repository.dart';
 
 final productsRepositoryProvider = Provider<ProductsRepository>((ref) {
-  throw UnimplementedError('ProductsRepository not implemented');
+  return ProductsRepositoryImpl(ref.watch(productsDaoProvider));
 });
 
 final getAllProductsUseCaseProvider = Provider<GetAllProductsUseCase>((ref) {
