@@ -29,7 +29,6 @@ final deleteOrderUseCaseProvider = Provider<DeleteOrderUseCase>((ref) {
   return DeleteOrderUseCase(ref.watch(ordersRepositoryProvider));
 });
 
-// Data Providers
 final allOrdersProvider = FutureProvider<List<OrderEntity>>((ref) {
   return ref.watch(getAllOrdersUseCaseProvider).call();
 });
