@@ -1,7 +1,10 @@
 import 'package:barista_notes/features/pos/presentation/providers/categories_provider.dart';
+
+import 'package:barista_notes/features/pos/presentation/providers/products_filtered_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/category_bar.dart';
+import '../widgets/product_card.dart';
 
 class PosPage extends ConsumerStatefulWidget {
   const PosPage({super.key});
@@ -11,23 +14,32 @@ class PosPage extends ConsumerStatefulWidget {
 }
 
 class _PosPageState extends ConsumerState<PosPage> {
-  String? selectedCategory;
-
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(allCategoriesProvider);
+    final filteredProducts = ref.watch(filteredProductsProvider);
 
     return Scaffold(
       body: Row(
         children: [
+          // --- ستون دسته‌ها ---
           categoriesAsync.when(
             data: (categories) {
               final titles = categories.map((c) => c.title).toList();
               return CategoryBar(
                 categories: titles,
-                selectedCategory: selectedCategory,
-                onCategorySelected: (cat) {
-                  setState(() => selectedCategory = cat);
+                selectedCategory:
+                    categories
+                        .firstWhere(
+                          (c) => c.id == ref.watch(selectedCategoryProvider),
+                          orElse: () => categories.first,
+                        )
+                        .title,
+
+                onCategorySelected: (catTitle) {
+                  final catId =
+                      categories.firstWhere((c) => c.title == catTitle).id;
+                  ref.read(selectedCategoryProvider.notifier).state = catId;
                 },
               );
             },
@@ -35,8 +47,38 @@ class _PosPageState extends ConsumerState<PosPage> {
             error: (err, _) => Center(child: Text('Error: $err')),
           ),
 
-          Expanded(child: Center(child: Text("Items for $selectedCategory"))),
+          // --- ستون محصولات ---
+          Expanded(
+            child:
+                filteredProducts.isEmpty
+                    ? const Center(child: Text("هیچ محصولی یافت نشد"))
+                    : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: 0.75,
+                            ),
+                        itemCount: filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          final p = filteredProducts[index];
+                          return ProductCard(
+                            name: p.name,
+                            price: p.price,
+                            imageUrl: null, // TODO: اضافه کردن لینک تصویر
+                            onTap: () {
+                              // افزودن به لیست خرید
+                            },
+                          );
+                        },
+                      ),
+                    ),
+          ),
 
+          // --- ستون لیست خرید ---
           Container(
             width: 200,
             color: Colors.grey.shade200,
