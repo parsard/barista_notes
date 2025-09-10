@@ -1,3 +1,4 @@
+import 'package:barista_notes/features/pos/presentation/pages/pos_page.dart';
 import 'package:barista_notes/features/pos/presentation/providers/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'صفحه اصلی'),
+      home: const PosPage(),
     );
   }
 }
@@ -75,11 +76,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Add Product',
-        child: const Icon(Icons.add),
       ),
     );
   }

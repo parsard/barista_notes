@@ -6,7 +6,9 @@ import 'package:barista_notes/features/pos/domain/repositories/products_reposito
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
-  return AppDatabase();
+  final db = AppDatabase();
+  db.seedDatabase();
+  return db;
 });
 
 final productsDaoProvider = Provider((ref) {
