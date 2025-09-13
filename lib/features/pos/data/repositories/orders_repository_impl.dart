@@ -1,7 +1,5 @@
 import 'package:barista_notes/app/data/drift_database.dart';
-
 import 'package:barista_notes/features/pos/data/datasources/daos/orders_dao.dart';
-
 import 'package:barista_notes/features/pos/domain/entities/order.dart';
 import 'package:barista_notes/features/pos/domain/entities/order_item.dart';
 import 'package:barista_notes/features/pos/domain/repositories/orders_repository.dart';
@@ -17,7 +15,6 @@ class OrdersRepositoryImpl implements OrdersRepository {
     OrderEntity order,
     List<OrderItemEntity> items,
   ) async {
-    // Create order
     final orderId = await ordersDao.insertOrder(
       OrdersCompanion.insert(
         createdAt: Value(order.date),
@@ -44,7 +41,13 @@ class OrdersRepositoryImpl implements OrdersRepository {
     final orders = await ordersDao.getAllOrders();
     return orders
         .map(
-          (o) => OrderEntity(id: o.id, date: o.createdAt, total: o.totalAmount),
+          (o) => OrderEntity(
+            id: o.id,
+            date: o.createdAt,
+            total: o.totalAmount,
+            isPaid: false,
+            note: '',
+          ),
         )
         .toList();
   }
@@ -68,5 +71,17 @@ class OrdersRepositoryImpl implements OrdersRepository {
   @override
   Future<void> deleteOrder(int id) async {
     await ordersDao.deleteOrder(id);
+  }
+
+  @override
+  Future<void> addOrderItem(OrderItemEntity item) async {
+    await ordersDao.insertOrderItem(
+      OrderItemsCompanion.insert(
+        orderId: item.orderId,
+        productId: item.productId,
+        quantity: Value(item.quantity),
+        price: item.price,
+      ),
+    );
   }
 }

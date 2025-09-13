@@ -35,6 +35,7 @@ dependencies:
   drift:
   drift_flutter:
   path_provider:
+  path:
   sqlite3_flutter_libs:
   flutter_localization:
   cupertino_icons: ^1.0.8

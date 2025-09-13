@@ -62,6 +62,28 @@ extension AppDatabaseSeeder on AppDatabase {
     );
     await into(products).insert(
       ProductsCompanion.insert(
+        name: 'لاته',
+        price: 80000,
+        categoryId: (hotBarId),
+      ),
+    );
+    await into(products).insert(
+      ProductsCompanion.insert(
+        name: 'چای',
+        price: 40000,
+        categoryId: (hotBarId),
+      ),
+    );
+    await into(products).insert(
+      ProductsCompanion.insert(
+        name: 'ماچا',
+        price: 90000,
+        categoryId: (hotBarId),
+      ),
+    );
+
+    await into(products).insert(
+      ProductsCompanion.insert(
         name: 'آیس لاته',
         price: 40000,
         categoryId: (coldBarId),
@@ -93,11 +115,14 @@ extension AppDatabaseSeeder on AppDatabase {
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
+    final appSupportDir = await getApplicationSupportDirectory();
+    final dbFolder = Directory(p.join(appSupportDir.path, 'barista_notes'));
+    if (!await dbFolder.exists()) {
+      await dbFolder.create(recursive: true);
+    }
 
     final file = File(p.join(dbFolder.path, 'app_database.sqlite'));
     print('DB Path: ${file.path}');
-
-    return NativeDatabase(file);
+    return NativeDatabase.createInBackground(file);
   });
 }

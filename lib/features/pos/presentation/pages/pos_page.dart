@@ -1,6 +1,8 @@
 import 'package:barista_notes/features/pos/presentation/providers/categories_provider.dart';
+import 'package:barista_notes/features/pos/presentation/providers/orders_provider.dart';
 
 import 'package:barista_notes/features/pos/presentation/providers/products_filtered_provider.dart';
+import 'package:barista_notes/features/pos/presentation/widgets/add_to_order_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/category_bar.dart';
@@ -22,12 +24,18 @@ class _PosPageState extends ConsumerState<PosPage> {
     return Scaffold(
       body: Row(
         children: [
-          // --- ستون دسته‌ها ---
           categoriesAsync.when(
             data: (categories) {
-              final titles = categories.map((c) => c.title).toList();
+              final selectedCategoryId = ref.watch(selectedCategoryProvider);
+              if (selectedCategoryId == null && categories.isNotEmpty) {
+                Future.microtask(() {
+                  ref.read(selectedCategoryProvider.notifier).state =
+                      categories.first.id;
+                });
+              }
+
               return CategoryBar(
-                categories: titles,
+                categories: categories.map((c) => c.title).toList(),
                 selectedCategory:
                     categories
                         .firstWhere(
@@ -35,7 +43,6 @@ class _PosPageState extends ConsumerState<PosPage> {
                           orElse: () => categories.first,
                         )
                         .title,
-
                 onCategorySelected: (catTitle) {
                   final catId =
                       categories.firstWhere((c) => c.title == catTitle).id;
@@ -47,7 +54,6 @@ class _PosPageState extends ConsumerState<PosPage> {
             error: (err, _) => Center(child: Text('Error: $err')),
           ),
 
-          // --- ستون محصولات ---
           Expanded(
             child:
                 filteredProducts.isEmpty
@@ -57,20 +63,38 @@ class _PosPageState extends ConsumerState<PosPage> {
                       child: GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
+                              crossAxisCount: 5,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
-                              childAspectRatio: 0.75,
+                              childAspectRatio: 0.8,
                             ),
                         itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
                           final p = filteredProducts[index];
+                          print("Product: ${p.id} - ${p.name}");
+
                           return ProductCard(
+                            key: ValueKey(p.id),
+
                             name: p.name,
                             price: p.price,
-                            imageUrl: null, // TODO: اضافه کردن لینک تصویر
+                            imageUrl: null,
                             onTap: () {
-                              // افزودن به لیست خرید
+                              showDialog(
+                                context: context,
+                                builder:
+                                    (_) => AddToOrderDialog(
+                                      product: p,
+                                      onConfirm: (quantity) {
+                                        ref
+                                            .read(addItemToOrderProvider)
+                                            .call(
+                                              product: p,
+                                              quantity: quantity,
+                                            );
+                                      },
+                                    ),
+                              );
                             },
                           );
                         },
@@ -78,7 +102,6 @@ class _PosPageState extends ConsumerState<PosPage> {
                     ),
           ),
 
-          // --- ستون لیست خرید ---
           Container(
             width: 200,
             color: Colors.grey.shade200,
