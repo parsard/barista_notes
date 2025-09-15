@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductCard extends StatelessWidget {
   final String name;
@@ -18,27 +19,27 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(12),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
                 child:
                     imageUrl != null && imageUrl!.isNotEmpty
                         ? Image.network(imageUrl!, fit: BoxFit.cover)
                         : Container(
                           color: Colors.grey.shade200,
                           alignment: Alignment.center,
-                          child: const Icon(
+                          child: Icon(
                             Icons.image,
-                            size: 48,
+                            size: 48.sp,
                             color: Colors.grey,
                           ),
                         ),
@@ -46,7 +47,7 @@ class ProductCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
               child: Text(
                 name,
                 style: Theme.of(context).textTheme.titleMedium,

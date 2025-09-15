@@ -1,8 +1,12 @@
+import 'package:barista_notes/features/pos/domain/entities/category_entity.dart';
+import 'package:barista_notes/features/pos/domain/entities/order.dart';
+import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:barista_notes/features/pos/presentation/providers/categories_provider.dart';
-import 'package:barista_notes/features/pos/presentation/providers/orders_provider.dart';
-
 import 'package:barista_notes/features/pos/presentation/providers/products_filtered_provider.dart';
-import 'package:barista_notes/features/pos/presentation/widgets/add_to_order_dialog.dart';
+import 'package:barista_notes/features/pos/presentation/providers/recent_order_provider.dart';
+import 'package:barista_notes/features/pos/presentation/widgets/recent_orders_list.dart';
+import 'package:barista_notes/features/shopping_list/presentation/providers/shopping_list_provider.dart';
+import 'package:barista_notes/features/shopping_list/presentation/widgets/shopping_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/category_bar.dart';
@@ -16,36 +20,43 @@ class PosPage extends ConsumerStatefulWidget {
 }
 
 class _PosPageState extends ConsumerState<PosPage> {
+  final TextEditingController noteController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(allCategoriesProvider);
     final filteredProducts = ref.watch(filteredProductsProvider);
+    final selectedCategoryId = ref.watch(selectedCategoryProvider);
 
     return Scaffold(
       body: Row(
         children: [
           categoriesAsync.when(
             data: (categories) {
-              final selectedCategoryId = ref.watch(selectedCategoryProvider);
-              if (selectedCategoryId == null && categories.isNotEmpty) {
+              final allCategories = [
+                ...categories,
+                CategoryEntity(id: -1, title: 'سفارش‌های اخیر'),
+              ];
+
+              if (selectedCategoryId == null && allCategories.isNotEmpty) {
                 Future.microtask(() {
                   ref.read(selectedCategoryProvider.notifier).state =
-                      categories.first.id;
+                      allCategories.first.id;
                 });
               }
 
               return CategoryBar(
-                categories: categories.map((c) => c.title).toList(),
+                categories: allCategories.map((c) => c.title).toList(),
                 selectedCategory:
-                    categories
+                    allCategories
                         .firstWhere(
-                          (c) => c.id == ref.watch(selectedCategoryProvider),
-                          orElse: () => categories.first,
+                          (c) => c.id == selectedCategoryId,
+                          orElse: () => allCategories.first,
                         )
                         .title,
                 onCategorySelected: (catTitle) {
                   final catId =
-                      categories.firstWhere((c) => c.title == catTitle).id;
+                      allCategories.firstWhere((c) => c.title == catTitle).id;
                   ref.read(selectedCategoryProvider.notifier).state = catId;
                 },
               );
@@ -56,14 +67,16 @@ class _PosPageState extends ConsumerState<PosPage> {
 
           Expanded(
             child:
-                filteredProducts.isEmpty
+                selectedCategoryId == -1
+                    ? _buildRecentOrdersColumn(ref)
+                    : filteredProducts.isEmpty
                     ? const Center(child: Text("هیچ محصولی یافت نشد"))
                     : Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5,
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 200,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
                               childAspectRatio: 0.8,
@@ -71,30 +84,15 @@ class _PosPageState extends ConsumerState<PosPage> {
                         itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
                           final p = filteredProducts[index];
-                          print("Product: ${p.id} - ${p.name}");
-
                           return ProductCard(
                             key: ValueKey(p.id),
-
                             name: p.name,
                             price: p.price,
                             imageUrl: null,
                             onTap: () {
-                              showDialog(
-                                context: context,
-                                builder:
-                                    (_) => AddToOrderDialog(
-                                      product: p,
-                                      onConfirm: (quantity) {
-                                        ref
-                                            .read(addItemToOrderProvider)
-                                            .call(
-                                              product: p,
-                                              quantity: quantity,
-                                            );
-                                      },
-                                    ),
-                              );
+                              ref
+                                  .read(shoppingListProvider.notifier)
+                                  .addItem(p);
                             },
                           );
                         },
@@ -103,12 +101,53 @@ class _PosPageState extends ConsumerState<PosPage> {
           ),
 
           Container(
-            width: 200,
-            color: Colors.grey.shade200,
-            child: const Center(child: Text("Shopping List")),
+            width: 300,
+            color: Colors.grey.shade100,
+            padding: const EdgeInsets.all(8.0),
+            child: ShoppingListView(
+              noteController: noteController,
+              onConfirm: () async {
+                final shoppingList = ref.read(shoppingListProvider);
+                if (shoppingList.isEmpty) return;
+
+                final total = shoppingList.fold<double>(
+                  0,
+                  (sum, item) => sum + item.totalPrice,
+                );
+
+                final newOrder = OrderEntity(
+                  id: null,
+                  date: DateTime.now(),
+                  total: total,
+                  isPaid: false,
+                  note: noteController.text,
+                  items: shoppingList,
+                );
+
+                await ref.read(confirmOrderUseCaseProvider).call(newOrder);
+                ref.invalidate(recentOrdersProvider);
+                ref.read(shoppingListProvider.notifier).clear();
+                noteController.clear();
+              },
+              onCancel: () {
+                ref.read(shoppingListProvider.notifier).clear();
+                noteController.clear();
+              },
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+Widget _buildRecentOrdersColumn(WidgetRef ref) {
+  final recentOrdersAsync = ref.watch(recentOrdersProvider);
+
+  return recentOrdersAsync.when(
+    data: (orders) => RecentOrdersList(orders: orders),
+    loading:
+        () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+    error: (err, _) => Center(child: Text('Error: $err')),
+  );
 }

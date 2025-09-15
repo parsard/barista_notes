@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CategoryBar extends StatelessWidget {
   final List<String> categories;
@@ -15,7 +16,7 @@ class CategoryBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
+      width: 120.w,
       color: Colors.brown.shade50,
       child: ListView.builder(
         itemCount: categories.length,
@@ -26,11 +27,11 @@ class CategoryBar extends StatelessWidget {
           return GestureDetector(
             onTap: () => onCategorySelected(category),
             child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              padding: const EdgeInsets.all(12),
+              margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 8.w),
+              padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
                 color: isSelected ? Colors.brown.shade300 : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.r),
               ),
               child: Center(
                 child: Text(
