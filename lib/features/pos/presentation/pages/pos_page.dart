@@ -82,7 +82,6 @@ class _PosPageState extends ConsumerState<PosPage> {
                             price: p.price,
                             imageUrl: null,
                             onTap: () {
-                              // افزودن مستقیم به سبد خرید
                               ref
                                   .read(shoppingListProvider.notifier)
                                   .addItem(p);
@@ -93,7 +92,6 @@ class _PosPageState extends ConsumerState<PosPage> {
                     ),
           ),
 
-          // ستون 3 - سبد خرید
           Container(
             width: 300,
             color: Colors.grey.shade100,
@@ -109,7 +107,6 @@ class _PosPageState extends ConsumerState<PosPage> {
                   (sum, item) => sum + item.totalPrice,
                 );
 
-                // ایجاد OrderEntity
                 final newOrder = OrderEntity(
                   id: null,
                   date: DateTime.now(),

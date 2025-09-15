@@ -1,3 +1,4 @@
+import 'package:barista_notes/features/shopping_list/domain/entities/shopping_list_item_entites.dart';
 import 'package:barista_notes/features/pos/domain/entities/order.dart';
 import 'package:barista_notes/features/pos/domain/entities/order_item.dart';
 import 'package:barista_notes/features/pos/domain/repositories/orders_repository.dart';
@@ -9,16 +10,18 @@ class ConfirmOrderUseCase {
 
   Future<int> call(OrderEntity order) {
     final orderItems =
-        order.items.map((shoppingItem) {
+        order.items.map((ShoppingListItemEntity shoppingItem) {
           return OrderItemEntity(
             id: null,
-            orderId: order.id ?? 0,
-            productId: shoppingItem.product.id ?? 0,
+            orderId: order.id!,
+            productId: shoppingItem.product.id!,
             quantity: shoppingItem.quantity,
             price: shoppingItem.product.price,
           );
         }).toList();
 
-    return repository.createOrder(order, orderItems);
+    final updatedOrder = order.copyWith(note: order.note);
+
+    return repository.createOrder(updatedOrder, orderItems);
   }
 }

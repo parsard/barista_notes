@@ -1,5 +1,6 @@
 import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddToOrderDrawer extends StatefulWidget {
   final ProductEntity product;
@@ -30,11 +31,11 @@ class _AddToOrderDrawerState extends State<AddToOrderDrawer> {
     final theme = Theme.of(context);
 
     return SizedBox(
-      width: 320,
+      width: 320.w,
       child: Drawer(
         elevation: 8,
         child: Directionality(
-          textDirection: TextDirection.rtl, // برای متن و ورودی‌ها
+          textDirection: TextDirection.rtl,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,12 +46,11 @@ class _AddToOrderDrawerState extends State<AddToOrderDrawer> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Text("قیمت واحد: ${widget.product.price} تومان"),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
 
-              // Quantity control
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -59,10 +59,7 @@ class _AddToOrderDrawerState extends State<AddToOrderDrawer> {
                         quantity > 1 ? () => setState(() => quantity--) : null,
                     icon: const Icon(Icons.remove),
                   ),
-                  Text(
-                    quantity.toString(),
-                    style: const TextStyle(fontSize: 20),
-                  ),
+                  Text(quantity.toString(), style: TextStyle(fontSize: 20.sp)),
                   IconButton(
                     onPressed: () => setState(() => quantity++),
                     icon: const Icon(Icons.add),
@@ -70,11 +67,10 @@ class _AddToOrderDrawerState extends State<AddToOrderDrawer> {
                 ],
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
 
-              // Note field
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: TextField(
                   controller: noteController,
                   maxLines: 3,
@@ -98,7 +94,7 @@ class _AddToOrderDrawerState extends State<AddToOrderDrawer> {
                         child: const Text("انصراف"),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8.w),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
