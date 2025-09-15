@@ -15,25 +15,29 @@ class OrdersRepositoryImpl implements OrdersRepository {
     OrderEntity order,
     List<OrderItemEntity> items,
   ) async {
-    final orderId = await ordersDao.insertOrder(
-      OrdersCompanion.insert(
-        createdAt: Value(order.date),
-        totalAmount: Value(order.total),
-      ),
-    );
-
-    for (var item in items) {
-      await ordersDao.insertOrderItem(
-        OrderItemsCompanion.insert(
-          orderId: orderId,
-          productId: item.productId,
-          quantity: Value(item.quantity),
-          price: item.price,
+    return ordersDao.transaction(() async {
+      final orderId = await ordersDao.insertOrder(
+        OrdersCompanion.insert(
+          createdAt: Value(order.date),
+          totalAmount: Value(order.total),
+          isPaid: Value(order.isPaid),
+          note: Value(order.note),
         ),
       );
-    }
 
-    return orderId;
+      for (var item in items) {
+        await ordersDao.insertOrderItem(
+          OrderItemsCompanion.insert(
+            orderId: orderId,
+            productId: item.productId,
+            quantity: Value(item.quantity),
+            price: item.price,
+          ),
+        );
+      }
+
+      return orderId;
+    });
   }
 
   @override
@@ -47,6 +51,7 @@ class OrdersRepositoryImpl implements OrdersRepository {
             total: o.totalAmount,
             isPaid: false,
             note: '',
+            items: [],
           ),
         )
         .toList();

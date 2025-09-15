@@ -1,6 +1,7 @@
 import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:barista_notes/features/pos/domain/usecases/orders/add_order_item_usecase.dart';
 import 'package:barista_notes/features/pos/domain/usecases/orders/get_item_by_order_id_usecase.dart';
+import 'package:barista_notes/features/shopping_list/domain/usecases/confirm_order_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/order.dart';
 import '../../domain/entities/order_item.dart';
@@ -27,6 +28,7 @@ final addItemToOrderProvider = Provider<
         total: product.price * quantity,
         isPaid: false,
         note: '',
+        items: [],
       );
 
       final orderItem = OrderItemEntity(
@@ -57,6 +59,10 @@ final addItemToOrderProvider = Provider<
           price: product.price,
         );
   };
+});
+final confirmOrderUseCaseProvider = Provider<ConfirmOrderUseCase>((ref) {
+  final repository = ref.watch(ordersRepositoryProvider);
+  return ConfirmOrderUseCase(repository);
 });
 final ordersRepositoryProvider = Provider<OrdersRepository>((ref) {
   throw UnimplementedError('OrdersRepository not implemented');

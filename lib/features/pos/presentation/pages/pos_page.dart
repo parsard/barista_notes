@@ -1,8 +1,9 @@
+import 'package:barista_notes/features/pos/domain/entities/order.dart';
+import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:barista_notes/features/pos/presentation/providers/categories_provider.dart';
-import 'package:barista_notes/features/pos/presentation/providers/orders_provider.dart';
-
 import 'package:barista_notes/features/pos/presentation/providers/products_filtered_provider.dart';
-import 'package:barista_notes/features/pos/presentation/widgets/add_to_order_dialog.dart';
+import 'package:barista_notes/features/shopping_list/presentation/providers/shopping_list_provider.dart';
+import 'package:barista_notes/features/shopping_list/presentation/widgets/shopping_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/category_bar.dart';
@@ -16,6 +17,8 @@ class PosPage extends ConsumerStatefulWidget {
 }
 
 class _PosPageState extends ConsumerState<PosPage> {
+  final TextEditingController noteController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(allCategoriesProvider);
@@ -24,6 +27,7 @@ class _PosPageState extends ConsumerState<PosPage> {
     return Scaffold(
       body: Row(
         children: [
+          // ستون 1 - دسته‌بندی محصولات
           categoriesAsync.when(
             data: (categories) {
               final selectedCategoryId = ref.watch(selectedCategoryProvider);
@@ -33,7 +37,6 @@ class _PosPageState extends ConsumerState<PosPage> {
                       categories.first.id;
                 });
               }
-
               return CategoryBar(
                 categories: categories.map((c) => c.title).toList(),
                 selectedCategory:
@@ -54,6 +57,7 @@ class _PosPageState extends ConsumerState<PosPage> {
             error: (err, _) => Center(child: Text('Error: $err')),
           ),
 
+          // ستون 2 - لیست محصولات
           Expanded(
             child:
                 filteredProducts.isEmpty
@@ -62,8 +66,9 @@ class _PosPageState extends ConsumerState<PosPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5,
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent:
+                                  200, // قابل ریسایز بر اساس عرض
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
                               childAspectRatio: 0.8,
@@ -71,30 +76,16 @@ class _PosPageState extends ConsumerState<PosPage> {
                         itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
                           final p = filteredProducts[index];
-                          print("Product: ${p.id} - ${p.name}");
-
                           return ProductCard(
                             key: ValueKey(p.id),
-
                             name: p.name,
                             price: p.price,
                             imageUrl: null,
                             onTap: () {
-                              showDialog(
-                                context: context,
-                                builder:
-                                    (_) => AddToOrderDialog(
-                                      product: p,
-                                      onConfirm: (quantity) {
-                                        ref
-                                            .read(addItemToOrderProvider)
-                                            .call(
-                                              product: p,
-                                              quantity: quantity,
-                                            );
-                                      },
-                                    ),
-                              );
+                              // افزودن مستقیم به سبد خرید
+                              ref
+                                  .read(shoppingListProvider.notifier)
+                                  .addItem(p);
                             },
                           );
                         },
@@ -102,10 +93,42 @@ class _PosPageState extends ConsumerState<PosPage> {
                     ),
           ),
 
+          // ستون 3 - سبد خرید
           Container(
-            width: 200,
-            color: Colors.grey.shade200,
-            child: const Center(child: Text("Shopping List")),
+            width: 300,
+            color: Colors.grey.shade100,
+            padding: const EdgeInsets.all(8.0),
+            child: ShoppingListView(
+              noteController: noteController,
+              onConfirm: () async {
+                final shoppingList = ref.read(shoppingListProvider);
+                if (shoppingList.isEmpty) return;
+
+                final total = shoppingList.fold<double>(
+                  0,
+                  (sum, item) => sum + item.totalPrice,
+                );
+
+                // ایجاد OrderEntity
+                final newOrder = OrderEntity(
+                  id: null,
+                  date: DateTime.now(),
+                  total: total,
+                  isPaid: false,
+                  note: noteController.text,
+                  items: shoppingList,
+                );
+
+                await ref.read(confirmOrderUseCaseProvider).call(newOrder);
+
+                ref.read(shoppingListProvider.notifier).clear();
+                noteController.clear();
+              },
+              onCancel: () {
+                ref.read(shoppingListProvider.notifier).clear();
+                noteController.clear();
+              },
+            ),
           ),
         ],
       ),
