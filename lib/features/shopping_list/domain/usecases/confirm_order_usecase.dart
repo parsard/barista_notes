@@ -13,8 +13,8 @@ class ConfirmOrderUseCase {
         order.items.map((ShoppingListItemEntity shoppingItem) {
           return OrderItemEntity(
             id: null,
-            orderId: order.id!,
-            productId: shoppingItem.product.id!,
+            orderId: order.id ?? 0,
+            productId: shoppingItem.product.id ?? 0,
             quantity: shoppingItem.quantity,
             price: shoppingItem.product.price,
           );

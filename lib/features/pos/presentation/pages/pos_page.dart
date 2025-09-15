@@ -1,7 +1,10 @@
+import 'package:barista_notes/features/pos/domain/entities/category_entity.dart';
 import 'package:barista_notes/features/pos/domain/entities/order.dart';
 import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:barista_notes/features/pos/presentation/providers/categories_provider.dart';
 import 'package:barista_notes/features/pos/presentation/providers/products_filtered_provider.dart';
+import 'package:barista_notes/features/pos/presentation/providers/recent_order_provider.dart';
+import 'package:barista_notes/features/pos/presentation/widgets/recent_orders_list.dart';
 import 'package:barista_notes/features/shopping_list/presentation/providers/shopping_list_provider.dart';
 import 'package:barista_notes/features/shopping_list/presentation/widgets/shopping_list_view.dart';
 import 'package:flutter/material.dart';
@@ -23,32 +26,37 @@ class _PosPageState extends ConsumerState<PosPage> {
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(allCategoriesProvider);
     final filteredProducts = ref.watch(filteredProductsProvider);
+    final selectedCategoryId = ref.watch(selectedCategoryProvider);
 
     return Scaffold(
       body: Row(
         children: [
-          // ستون 1 - دسته‌بندی محصولات
           categoriesAsync.when(
             data: (categories) {
-              final selectedCategoryId = ref.watch(selectedCategoryProvider);
-              if (selectedCategoryId == null && categories.isNotEmpty) {
+              final allCategories = [
+                ...categories,
+                CategoryEntity(id: -1, title: 'سفارش‌های اخیر'),
+              ];
+
+              if (selectedCategoryId == null && allCategories.isNotEmpty) {
                 Future.microtask(() {
                   ref.read(selectedCategoryProvider.notifier).state =
-                      categories.first.id;
+                      allCategories.first.id;
                 });
               }
+
               return CategoryBar(
-                categories: categories.map((c) => c.title).toList(),
+                categories: allCategories.map((c) => c.title).toList(),
                 selectedCategory:
-                    categories
+                    allCategories
                         .firstWhere(
-                          (c) => c.id == ref.watch(selectedCategoryProvider),
-                          orElse: () => categories.first,
+                          (c) => c.id == selectedCategoryId,
+                          orElse: () => allCategories.first,
                         )
                         .title,
                 onCategorySelected: (catTitle) {
                   final catId =
-                      categories.firstWhere((c) => c.title == catTitle).id;
+                      allCategories.firstWhere((c) => c.title == catTitle).id;
                   ref.read(selectedCategoryProvider.notifier).state = catId;
                 },
               );
@@ -57,18 +65,18 @@ class _PosPageState extends ConsumerState<PosPage> {
             error: (err, _) => Center(child: Text('Error: $err')),
           ),
 
-          // ستون 2 - لیست محصولات
           Expanded(
             child:
-                filteredProducts.isEmpty
+                selectedCategoryId == -1
+                    ? _buildRecentOrdersColumn(ref)
+                    : filteredProducts.isEmpty
                     ? const Center(child: Text("هیچ محصولی یافت نشد"))
                     : Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent:
-                                  200, // قابل ریسایز بر اساس عرض
+                              maxCrossAxisExtent: 200,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
                               childAspectRatio: 0.8,
@@ -117,7 +125,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                 );
 
                 await ref.read(confirmOrderUseCaseProvider).call(newOrder);
-
+                ref.invalidate(recentOrdersProvider);
                 ref.read(shoppingListProvider.notifier).clear();
                 noteController.clear();
               },
@@ -131,4 +139,15 @@ class _PosPageState extends ConsumerState<PosPage> {
       ),
     );
   }
+}
+
+Widget _buildRecentOrdersColumn(WidgetRef ref) {
+  final recentOrdersAsync = ref.watch(recentOrdersProvider);
+
+  return recentOrdersAsync.when(
+    data: (orders) => RecentOrdersList(orders: orders),
+    loading:
+        () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+    error: (err, _) => Center(child: Text('Error: $err')),
+  );
 }
