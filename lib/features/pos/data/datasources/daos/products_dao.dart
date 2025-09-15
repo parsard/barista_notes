@@ -20,5 +20,10 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
       update(products).replace(entry);
 
   Future<int> deleteProduct(int id) =>
-      (delete(products)..where((tbl) => tbl.id.equals(id))).go();
+      (delete(products)
+        ..where((tbl) => tbl.id.equals(id))).go(); // در ProductsDao
+  Future<Product?> getProductById(int id) {
+    return (select(products)
+      ..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  }
 }

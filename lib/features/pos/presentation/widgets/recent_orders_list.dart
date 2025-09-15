@@ -33,7 +33,48 @@ class RecentOrdersList extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            onTap: () {
+              _showOrderDetails(context, order);
+            },
           ),
+        );
+      },
+    );
+  }
+
+  void _showOrderDetails(BuildContext context, OrderEntity order) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('جزئیات سفارش #${order.id ?? '-'}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ...order.items.map(
+                (item) => Text(
+                  '${item.product.name} × ${item.quantity}',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (order.note != null && order.note!.isNotEmpty)
+                Text(
+                  'یادداشت: ${order.note}',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('بستن'),
+            ),
+          ],
         );
       },
     );

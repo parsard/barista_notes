@@ -24,5 +24,8 @@ final productsRepositoryProvider = Provider<ProductsRepository>((ref) {
 });
 
 final ordersRepositoryProvider = Provider<OrdersRepository>((ref) {
-  return OrdersRepositoryImpl(ref.watch(ordersDaoProvider));
+  return OrdersRepositoryImpl(
+    ref.watch(ordersDaoProvider),
+    ref.watch(productsRepositoryProvider),
+  );
 });

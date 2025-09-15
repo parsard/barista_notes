@@ -1,6 +1,6 @@
 import 'package:barista_notes/app/data/drift_database.dart';
 import 'package:barista_notes/features/pos/data/datasources/daos/products_dao.dart';
-import 'package:barista_notes/features/pos/data/datasources/products_table.dart';
+
 import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:barista_notes/features/pos/domain/repositories/products_repository.dart';
 import 'package:drift/drift.dart';
@@ -23,6 +23,19 @@ class ProductsRepositoryImpl implements ProductsRepository {
           ),
         )
         .toList();
+  }
+
+  @override
+  Future<ProductEntity?> getProductById(int id) async {
+    final product = await productsDao.getProductById(id);
+    if (product == null) return null;
+
+    return ProductEntity(
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      categoryId: product.categoryId,
+    );
   }
 
   @override
