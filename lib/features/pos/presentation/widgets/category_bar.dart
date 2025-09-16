@@ -6,12 +6,14 @@ class CategoryBar extends StatelessWidget {
   final List<String> categories;
   final String? selectedCategory;
   final ValueChanged<String> onCategorySelected;
+  final Map<String, IconData> categoryIcons; // این بخش اضافه شد
 
   const CategoryBar({
     super.key,
     required this.categories,
     required this.selectedCategory,
     required this.onCategorySelected,
+    required this.categoryIcons,
   });
 
   @override
@@ -22,11 +24,12 @@ class CategoryBar extends StatelessWidget {
       child: ListView.builder(
         itemCount: categories.length,
         itemBuilder: (context, index) {
-          final category = categories[index];
-          final isSelected = category == selectedCategory;
+          final categoryTitle = categories[index];
+          final isSelected = categoryTitle == selectedCategory;
+          final icon = categoryIcons[categoryTitle] ?? Icons.label;
 
           return GestureDetector(
-            onTap: () => onCategorySelected(category),
+            onTap: () => onCategorySelected(categoryTitle),
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 8.w),
               padding: EdgeInsets.all(12.w),
@@ -34,15 +37,27 @@ class CategoryBar extends StatelessWidget {
                 color: isSelected ? Colors.brown.shade300 : Colors.transparent,
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Center(
-                child: Text(
-                  category,
-                  style: TextStyle(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    icon,
                     color: isSelected ? AppColors.text : AppColors.backGround,
-                    fontWeight: FontWeight.bold,
+                    size: 18,
                   ),
-                  textAlign: TextAlign.center,
-                ),
+                  SizedBox(width: 4.w),
+                  Flexible(
+                    child: Text(
+                      categoryTitle,
+                      style: TextStyle(
+                        color:
+                            isSelected ? AppColors.text : AppColors.backGround,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );

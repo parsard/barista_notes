@@ -1,3 +1,4 @@
+import 'package:barista_notes/core/constants/images.dart';
 import 'package:barista_notes/features/pos/presentation/pages/pos_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +10,34 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final images = [
+      AppImages.tea,
+      AppImages.coffee,
+      AppImages.omelette,
+      AppImages.latte,
+      AppImages.iceLatte,
+      AppImages.cake,
+      AppImages.masalla,
+      AppImages.matcha,
+      AppImages.shake,
+    ];
+
+    for (final assetPath in images) {
+      precacheImage(AssetImage(assetPath), context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

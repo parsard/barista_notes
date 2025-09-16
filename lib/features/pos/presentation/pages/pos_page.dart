@@ -32,12 +32,25 @@ class _PosPageState extends ConsumerState<PosPage> {
       backgroundColor: AppColors.backGround,
       body: Row(
         children: [
+          // ستون دسته‌بندی
           categoriesAsync.when(
             data: (categories) {
+              final categoryIconsMap = <int, IconData>{
+                1: Icons.local_cafe, // نوشیدنی‌ها
+                2: Icons.cake, // کیک‌ها
+                3: Icons.fastfood, // فست‌فود
+                -1: Icons.history, // سفارش‌های اخیر
+              };
+
               final allCategories = [
                 ...categories,
                 CategoryEntity(id: -1, title: 'سفارش‌های اخیر'),
               ];
+
+              final categoryIconsByTitle = {
+                for (var c in allCategories)
+                  c.title: categoryIconsMap[c.id] ?? Icons.label,
+              };
 
               if (selectedCategoryId == null && allCategories.isNotEmpty) {
                 Future.microtask(() {
@@ -46,61 +59,97 @@ class _PosPageState extends ConsumerState<PosPage> {
                 });
               }
 
-              return CategoryBar(
-                categories: allCategories.map((c) => c.title).toList(),
-                selectedCategory:
-                    allCategories
-                        .firstWhere(
-                          (c) => c.id == selectedCategoryId,
-                          orElse: () => allCategories.first,
-                        )
-                        .title,
-                onCategorySelected: (catTitle) {
-                  final catId =
-                      allCategories.firstWhere((c) => c.title == catTitle).id;
-                  ref.read(selectedCategoryProvider.notifier).state = catId;
-                },
+              return SizedBox(
+                width: 160, // عرض ثابت برای جلوگیری از فشردگی
+                child: CategoryBar(
+                  categories: allCategories.map((c) => c.title).toList(),
+                  selectedCategory:
+                      allCategories
+                          .firstWhere(
+                            (c) => c.id == selectedCategoryId,
+                            orElse: () => allCategories.first,
+                          )
+                          .title,
+                  categoryIcons: categoryIconsByTitle,
+                  onCategorySelected: (catTitle) {
+                    final catId =
+                        allCategories.firstWhere((c) => c.title == catTitle).id;
+                    ref.read(selectedCategoryProvider.notifier).state = catId;
+                  },
+                ),
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('Error: $err')),
+            loading:
+                () => const SizedBox(
+                  width: 120,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+            error:
+                (err, _) => SizedBox(
+                  width: 120,
+                  child: Center(child: Text('Error: $err')),
+                ),
           ),
 
+          // ستون محصولات
           Expanded(
-            child:
-                selectedCategoryId == -1
-                    ? _buildRecentOrdersColumn(ref)
-                    : filteredProducts.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
-                    : Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 200,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                              childAspectRatio: 0.8,
-                            ),
-                        itemCount: filteredProducts.length,
-                        itemBuilder: (context, index) {
-                          final p = filteredProducts[index];
-                          return ProductCard(
-                            key: ValueKey(p.id),
-                            name: p.name,
-                            price: p.price,
-                            imageUrl: p.imageUrl,
-                            onTap: () {
-                              ref
-                                  .read(shoppingListProvider.notifier)
-                                  .addItem(p);
-                            },
-                          );
-                        },
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 120),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(
+                    scale: Tween<double>(
+                      begin: 0.95,
+                      end: 1.0,
+                    ).animate(animation),
+                    child: child,
+                  ),
+                );
+              },
+              child:
+                  selectedCategoryId == -1
+                      ? _buildRecentOrdersColumn(
+                        ref,
+                        key: const ValueKey('recent-orders'),
+                      )
+                      : filteredProducts.isEmpty
+                      ? const Center(
+                        key: ValueKey('loading-products'),
+                        child: CircularProgressIndicator(),
+                      )
+                      : Padding(
+                        key: ValueKey(selectedCategoryId),
+                        padding: const EdgeInsets.all(8.0),
+                        child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 200,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                                childAspectRatio: 0.8,
+                              ),
+                          itemCount: filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            final p = filteredProducts[index];
+                            return ProductCard(
+                              key: ValueKey(p.id),
+                              name: p.name,
+                              price: p.price,
+                              imageUrl: p.imageUrl,
+                              onTap: () {
+                                ref
+                                    .read(shoppingListProvider.notifier)
+                                    .addItem(p);
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
+            ),
           ),
 
+          // ستون سبد خرید
           Container(
             width: 300,
             color: AppColors.brownLess,
@@ -142,13 +191,20 @@ class _PosPageState extends ConsumerState<PosPage> {
   }
 }
 
-Widget _buildRecentOrdersColumn(WidgetRef ref) {
+Widget _buildRecentOrdersColumn(WidgetRef ref, {Key? key}) {
   final recentOrdersAsync = ref.watch(recentOrdersProvider);
 
   return recentOrdersAsync.when(
-    data: (orders) => RecentOrdersList(orders: orders),
+    data: (orders) => RecentOrdersList(key: key, orders: orders),
     loading:
-        () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-    error: (err, _) => Center(child: Text('Error: $err')),
+        () => const Center(
+          key: ValueKey('loading-recent-orders'),
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+    error:
+        (err, _) => Center(
+          key: const ValueKey('error-recent-orders'),
+          child: Text('Error: $err'),
+        ),
   );
 }
