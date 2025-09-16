@@ -33,7 +33,9 @@ class ProductCard extends StatelessWidget {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
                 child:
                     imageUrl != null && imageUrl!.isNotEmpty
-                        ? Image.network(imageUrl!, fit: BoxFit.cover)
+                        ? (imageUrl!.startsWith('http')
+                            ? Image.network(imageUrl!, fit: BoxFit.cover)
+                            : Image.asset(imageUrl!, fit: BoxFit.cover))
                         : Container(
                           color: Colors.grey.shade200,
                           alignment: Alignment.center,

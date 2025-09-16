@@ -342,6 +342,17 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _imageUrlMeta = const VerificationMeta(
+    'imageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
+    'image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -350,6 +361,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     categoryId,
     stock,
     isActive,
+    imageUrl,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -402,6 +414,12 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
       );
     }
+    if (data.containsKey('image_url')) {
+      context.handle(
+        _imageUrlMeta,
+        imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta),
+      );
+    }
     return context;
   }
 
@@ -441,6 +459,10 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
             DriftSqlType.bool,
             data['${effectivePrefix}is_active'],
           )!,
+      imageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_url'],
+      ),
     );
   }
 
@@ -457,6 +479,7 @@ class Product extends DataClass implements Insertable<Product> {
   final int categoryId;
   final int stock;
   final bool isActive;
+  final String? imageUrl;
   const Product({
     required this.id,
     required this.name,
@@ -464,6 +487,7 @@ class Product extends DataClass implements Insertable<Product> {
     required this.categoryId,
     required this.stock,
     required this.isActive,
+    this.imageUrl,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -474,6 +498,9 @@ class Product extends DataClass implements Insertable<Product> {
     map['category_id'] = Variable<int>(categoryId);
     map['stock'] = Variable<int>(stock);
     map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || imageUrl != null) {
+      map['image_url'] = Variable<String>(imageUrl);
+    }
     return map;
   }
 
@@ -485,6 +512,10 @@ class Product extends DataClass implements Insertable<Product> {
       categoryId: Value(categoryId),
       stock: Value(stock),
       isActive: Value(isActive),
+      imageUrl:
+          imageUrl == null && nullToAbsent
+              ? const Value.absent()
+              : Value(imageUrl),
     );
   }
 
@@ -500,6 +531,7 @@ class Product extends DataClass implements Insertable<Product> {
       categoryId: serializer.fromJson<int>(json['categoryId']),
       stock: serializer.fromJson<int>(json['stock']),
       isActive: serializer.fromJson<bool>(json['isActive']),
+      imageUrl: serializer.fromJson<String?>(json['imageUrl']),
     );
   }
   @override
@@ -512,6 +544,7 @@ class Product extends DataClass implements Insertable<Product> {
       'categoryId': serializer.toJson<int>(categoryId),
       'stock': serializer.toJson<int>(stock),
       'isActive': serializer.toJson<bool>(isActive),
+      'imageUrl': serializer.toJson<String?>(imageUrl),
     };
   }
 
@@ -522,6 +555,7 @@ class Product extends DataClass implements Insertable<Product> {
     int? categoryId,
     int? stock,
     bool? isActive,
+    Value<String?> imageUrl = const Value.absent(),
   }) => Product(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -529,6 +563,7 @@ class Product extends DataClass implements Insertable<Product> {
     categoryId: categoryId ?? this.categoryId,
     stock: stock ?? this.stock,
     isActive: isActive ?? this.isActive,
+    imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
   );
   Product copyWithCompanion(ProductsCompanion data) {
     return Product(
@@ -539,6 +574,7 @@ class Product extends DataClass implements Insertable<Product> {
           data.categoryId.present ? data.categoryId.value : this.categoryId,
       stock: data.stock.present ? data.stock.value : this.stock,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
     );
   }
 
@@ -550,13 +586,15 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('price: $price, ')
           ..write('categoryId: $categoryId, ')
           ..write('stock: $stock, ')
-          ..write('isActive: $isActive')
+          ..write('isActive: $isActive, ')
+          ..write('imageUrl: $imageUrl')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, price, categoryId, stock, isActive);
+  int get hashCode =>
+      Object.hash(id, name, price, categoryId, stock, isActive, imageUrl);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -566,7 +604,8 @@ class Product extends DataClass implements Insertable<Product> {
           other.price == this.price &&
           other.categoryId == this.categoryId &&
           other.stock == this.stock &&
-          other.isActive == this.isActive);
+          other.isActive == this.isActive &&
+          other.imageUrl == this.imageUrl);
 }
 
 class ProductsCompanion extends UpdateCompanion<Product> {
@@ -576,6 +615,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<int> categoryId;
   final Value<int> stock;
   final Value<bool> isActive;
+  final Value<String?> imageUrl;
   const ProductsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -583,6 +623,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.categoryId = const Value.absent(),
     this.stock = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.imageUrl = const Value.absent(),
   });
   ProductsCompanion.insert({
     this.id = const Value.absent(),
@@ -591,6 +632,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     required int categoryId,
     this.stock = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.imageUrl = const Value.absent(),
   }) : name = Value(name),
        price = Value(price),
        categoryId = Value(categoryId);
@@ -601,6 +643,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<int>? categoryId,
     Expression<int>? stock,
     Expression<bool>? isActive,
+    Expression<String>? imageUrl,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -609,6 +652,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (categoryId != null) 'category_id': categoryId,
       if (stock != null) 'stock': stock,
       if (isActive != null) 'is_active': isActive,
+      if (imageUrl != null) 'image_url': imageUrl,
     });
   }
 
@@ -619,6 +663,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Value<int>? categoryId,
     Value<int>? stock,
     Value<bool>? isActive,
+    Value<String?>? imageUrl,
   }) {
     return ProductsCompanion(
       id: id ?? this.id,
@@ -627,6 +672,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       categoryId: categoryId ?? this.categoryId,
       stock: stock ?? this.stock,
       isActive: isActive ?? this.isActive,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -651,6 +697,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
+    }
     return map;
   }
 
@@ -662,7 +711,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('price: $price, ')
           ..write('categoryId: $categoryId, ')
           ..write('stock: $stock, ')
-          ..write('isActive: $isActive')
+          ..write('isActive: $isActive, ')
+          ..write('imageUrl: $imageUrl')
           ..write(')'))
         .toString();
   }
@@ -1673,6 +1723,7 @@ typedef $$ProductsTableCreateCompanionBuilder =
       required int categoryId,
       Value<int> stock,
       Value<bool> isActive,
+      Value<String?> imageUrl,
     });
 typedef $$ProductsTableUpdateCompanionBuilder =
     ProductsCompanion Function({
@@ -1682,6 +1733,7 @@ typedef $$ProductsTableUpdateCompanionBuilder =
       Value<int> categoryId,
       Value<int> stock,
       Value<bool> isActive,
+      Value<String?> imageUrl,
     });
 
 final class $$ProductsTableReferences
@@ -1757,6 +1809,11 @@ class $$ProductsTableFilterComposer
 
   ColumnFilters<bool> get isActive => $composableBuilder(
     column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1843,6 +1900,11 @@ class $$ProductsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$CategoriesTableOrderingComposer get categoryId {
     final $$CategoriesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -1890,6 +1952,9 @@ class $$ProductsTableAnnotationComposer
 
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<String> get imageUrl =>
+      $composableBuilder(column: $table.imageUrl, builder: (column) => column);
 
   $$CategoriesTableAnnotationComposer get categoryId {
     final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
@@ -1974,6 +2039,7 @@ class $$ProductsTableTableManager
                 Value<int> categoryId = const Value.absent(),
                 Value<int> stock = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
               }) => ProductsCompanion(
                 id: id,
                 name: name,
@@ -1981,6 +2047,7 @@ class $$ProductsTableTableManager
                 categoryId: categoryId,
                 stock: stock,
                 isActive: isActive,
+                imageUrl: imageUrl,
               ),
           createCompanionCallback:
               ({
@@ -1990,6 +2057,7 @@ class $$ProductsTableTableManager
                 required int categoryId,
                 Value<int> stock = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
               }) => ProductsCompanion.insert(
                 id: id,
                 name: name,
@@ -1997,6 +2065,7 @@ class $$ProductsTableTableManager
                 categoryId: categoryId,
                 stock: stock,
                 isActive: isActive,
+                imageUrl: imageUrl,
               ),
           withReferenceMapper:
               (p0) =>

@@ -89,7 +89,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                             key: ValueKey(p.id),
                             name: p.name,
                             price: p.price,
-                            imageUrl: null,
+                            imageUrl: p.imageUrl,
                             onTap: () {
                               ref
                                   .read(shoppingListProvider.notifier)

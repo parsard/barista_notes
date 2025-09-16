@@ -20,6 +20,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
             name: p.name,
             price: p.price,
             categoryId: p.categoryId,
+            imageUrl: p.imageUrl,
           ),
         )
         .toList();
@@ -35,6 +36,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
       name: product.name,
       price: product.price,
       categoryId: product.categoryId,
+      imageUrl: product.imageUrl,
     );
   }
 
@@ -49,6 +51,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
                   name: p.name,
                   price: p.price,
                   categoryId: p.categoryId,
+                  imageUrl: p.imageUrl,
                 ),
               )
               .toList(),
@@ -62,6 +65,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
         name: product.name,
         price: product.price,
         categoryId: product.categoryId,
+        imageUrl: Value(product.imageUrl),
       ),
     );
   }
@@ -77,6 +81,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
         name: Value(product.name),
         price: Value(product.price),
         categoryId: Value(product.categoryId),
+        imageUrl: Value(product.imageUrl),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:barista_notes/core/constants/images.dart';
 import 'package:barista_notes/features/pos/data/datasources/daos/orders_dao.dart';
 import 'package:barista_notes/features/pos/data/datasources/daos/products_dao.dart';
 import 'package:barista_notes/features/pos/data/datasources/order_item_table.dart';
@@ -22,7 +23,18 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (migrator, from, to) async {
+      if (from == 1) {
+        await migrator.addColumn(
+          products,
+          products.imageUrl as GeneratedColumn<Object>,
+        );
+      }
+    },
+  );
 }
 
 extension AppDatabaseSeeder on AppDatabase {
@@ -51,6 +63,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: ' اسپرسو',
         price: 30000,
         categoryId: (hotBarId),
+        imageUrl: Value(AppImages.coffee),
       ),
     );
     await into(products).insert(
@@ -58,6 +71,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'چای ماسالا',
         price: 35000,
         categoryId: (hotBarId),
+        imageUrl: Value(AppImages.masalla),
       ),
     );
     await into(products).insert(
@@ -65,6 +79,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'لاته',
         price: 80000,
         categoryId: (hotBarId),
+        imageUrl: Value(AppImages.latte),
       ),
     );
     await into(products).insert(
@@ -72,6 +87,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'چای',
         price: 40000,
         categoryId: (hotBarId),
+        imageUrl: Value(AppImages.tea),
       ),
     );
     await into(products).insert(
@@ -79,6 +95,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'ماچا',
         price: 90000,
         categoryId: (hotBarId),
+        imageUrl: Value(AppImages.matcha),
       ),
     );
 
@@ -87,6 +104,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'آیس لاته',
         price: 40000,
         categoryId: (coldBarId),
+        imageUrl: Value(AppImages.iceLatte),
       ),
     );
     await into(products).insert(
@@ -94,6 +112,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'کیک شکلاتی',
         price: 25000,
         categoryId: (cakeId),
+        imageUrl: Value(AppImages.cake),
       ),
     );
     await into(products).insert(
@@ -101,6 +120,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'املت',
         price: 45000,
         categoryId: (breakfastId),
+        imageUrl: Value(AppImages.omelette),
       ),
     );
     await into(products).insert(
@@ -108,6 +128,7 @@ extension AppDatabaseSeeder on AppDatabase {
         name: 'شیک وانیل',
         price: 55000,
         categoryId: (shakeId),
+        imageUrl: Value(AppImages.shake),
       ),
     );
   }

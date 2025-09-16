@@ -8,4 +8,5 @@ class Products extends Table {
   IntColumn get categoryId => integer().references(Categories, #id)();
   IntColumn get stock => integer().withDefault(const Constant(0))();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  TextColumn get imageUrl => text().nullable()();
 }
