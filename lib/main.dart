@@ -42,7 +42,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      // فرض: طراحی بر اساس صفحه وب Full HD
       designSize: const Size(1920, 1080),
       minTextAdapt: true,
       splitScreenMode: true,

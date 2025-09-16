@@ -4,7 +4,7 @@ import 'package:barista_notes/features/pos/domain/entities/order.dart';
 import 'package:barista_notes/features/pos/presentation/providers/categories_provider.dart';
 import 'package:barista_notes/features/pos/presentation/providers/products_filtered_provider.dart';
 import 'package:barista_notes/features/pos/presentation/providers/recent_order_provider.dart';
-import 'package:barista_notes/features/pos/presentation/widgets/recent_orders_list.dart';
+import 'package:barista_notes/features/pos/presentation/widgets/recent_orders/recent_orders_list.dart';
 import 'package:barista_notes/features/shopping_list/presentation/providers/shopping_list_provider.dart';
 import 'package:barista_notes/features/shopping_list/presentation/widgets/shopping_list_view.dart';
 import 'package:flutter/material.dart';
@@ -36,10 +36,12 @@ class _PosPageState extends ConsumerState<PosPage> {
           categoriesAsync.when(
             data: (categories) {
               final categoryIconsMap = <int, IconData>{
-                1: Icons.local_cafe, // نوشیدنی‌ها
-                2: Icons.cake, // کیک‌ها
-                3: Icons.fastfood, // فست‌فود
-                -1: Icons.history, // سفارش‌های اخیر
+                1: Icons.local_cafe,
+                2: Icons.local_cafe_outlined,
+                3: Icons.cake,
+                4: Icons.breakfast_dining,
+                5: Icons.icecream,
+                -1: Icons.history,
               };
 
               final allCategories = [
