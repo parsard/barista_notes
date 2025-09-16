@@ -1,3 +1,4 @@
+import 'package:barista_notes/core/constants/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,7 +18,7 @@ class CategoryBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 120.w,
-      color: Colors.brown.shade50,
+      color: AppColors.brownLess,
       child: ListView.builder(
         itemCount: categories.length,
         itemBuilder: (context, index) {
@@ -37,7 +38,7 @@ class CategoryBar extends StatelessWidget {
                 child: Text(
                   category,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.brown.shade800,
+                    color: isSelected ? AppColors.text : AppColors.backGround,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,

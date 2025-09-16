@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             fontFamily: PersianFonts.Yekan.fontFamily,
             textTheme: PersianFonts.vazirTextTheme,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
+
             useMaterial3: true,
           ),
           home: child,

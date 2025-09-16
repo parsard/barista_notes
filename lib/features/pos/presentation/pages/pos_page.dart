@@ -1,6 +1,6 @@
+import 'package:barista_notes/core/constants/color.dart';
 import 'package:barista_notes/features/pos/domain/entities/category_entity.dart';
 import 'package:barista_notes/features/pos/domain/entities/order.dart';
-import 'package:barista_notes/features/pos/domain/entities/product.dart';
 import 'package:barista_notes/features/pos/presentation/providers/categories_provider.dart';
 import 'package:barista_notes/features/pos/presentation/providers/products_filtered_provider.dart';
 import 'package:barista_notes/features/pos/presentation/providers/recent_order_provider.dart';
@@ -29,6 +29,7 @@ class _PosPageState extends ConsumerState<PosPage> {
     final selectedCategoryId = ref.watch(selectedCategoryProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.backGround,
       body: Row(
         children: [
           categoriesAsync.when(
@@ -70,7 +71,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                 selectedCategoryId == -1
                     ? _buildRecentOrdersColumn(ref)
                     : filteredProducts.isEmpty
-                    ? const Center(child: Text("هیچ محصولی یافت نشد"))
+                    ? const Center(child: CircularProgressIndicator())
                     : Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
@@ -102,7 +103,7 @@ class _PosPageState extends ConsumerState<PosPage> {
 
           Container(
             width: 300,
-            color: Colors.grey.shade100,
+            color: AppColors.brownLess,
             padding: const EdgeInsets.all(8.0),
             child: ShoppingListView(
               noteController: noteController,
