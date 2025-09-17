@@ -88,22 +88,6 @@ Repository Impl بین **Domain** و **DAO** قرار دارد و مسئول **�
 - تبدیل Entityهای Domain به مدل Drift (Companionها) و برعکس
 - ایجاد واسط قابل تعویض برای دیتاسورس‌های مختلف (مانند SQL، API، یا حافظه محلی)
 
-**نمونه‌ها در پروژه:**
-
-#### `ProductsRepositoryImpl`
-- استفاده از `ProductsDao`
-- تبدیل `ProductEntity` ↔ `ProductsCompanion`
-- مثال:
-```dart
-@override
-Future<void> addProduct(ProductEntity product) async {
-  final companion = ProductsCompanion.insert(
-name: product.name,
-price: product.price,
-// ...
-  );
-  await _productsDao.insertProduct(companion);
-}
 
 ---
 ## 📦 وابستگی‌ها (Dependencies)
