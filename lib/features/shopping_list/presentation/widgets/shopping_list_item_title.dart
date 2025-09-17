@@ -14,7 +14,7 @@ class ShoppingListItemTile extends ConsumerWidget {
     final notifier = ref.read(shoppingListProvider.notifier);
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 6.w),
+      margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
       decoration: BoxDecoration(
         color: AppColors.backGround,
         borderRadius: BorderRadius.circular(16.r),
@@ -43,11 +43,13 @@ class ShoppingListItemTile extends ConsumerWidget {
             IconButton(
               onPressed: () => notifier.decreaseQuantity(item.product.id!),
               icon: const Icon(Icons.remove, color: AppColors.cancel),
+              tooltip: 'کاهش تعداد',
             ),
             IconButton(
               padding: EdgeInsets.zero,
               onPressed: () => notifier.increaseQuantity(item.product.id!),
               icon: const Icon(Icons.add, color: AppColors.cancel),
+              tooltip: 'افزایش تعداد',
             ),
             IconButton(
               visualDensity: VisualDensity.compact,
