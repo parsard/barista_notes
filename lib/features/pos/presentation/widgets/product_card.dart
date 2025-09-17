@@ -45,9 +45,7 @@ class _ProductCardState extends State<ProductCard> {
             onTap: widget.onTap,
             borderRadius: BorderRadius.circular(12.r),
             child: Card(
-              color: AppColors.backGround.withOpacity(
-                0.9,
-              ), // <-- This sets the card's background color
+              color: AppColors.backGround.withOpacity(0.9),
               elevation: 2,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
