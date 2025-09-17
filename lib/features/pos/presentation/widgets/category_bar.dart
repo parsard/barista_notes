@@ -34,8 +34,11 @@ class CategoryBar extends StatelessWidget {
               margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.brown.shade300 : Colors.transparent,
-                borderRadius: BorderRadius.circular(8.r),
+                color:
+                    isSelected
+                        ? AppColors.backGround.withOpacity(0.2)
+                        : Colors.transparent,
+                borderRadius: BorderRadius.circular(16.r),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
