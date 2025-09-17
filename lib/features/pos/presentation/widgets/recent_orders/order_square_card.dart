@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:barista_notes/features/pos/domain/entities/order.dart';
 import 'order_details_dialog.dart';
@@ -30,7 +31,7 @@ class _OrderSquareCardState extends State<OrderSquareCard> {
           duration: const Duration(milliseconds: 150),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.r),
             boxShadow: [
               if (_isHovered)
                 BoxShadow(
@@ -46,20 +47,17 @@ class _OrderSquareCardState extends State<OrderSquareCard> {
             children: [
               Text(
                 'سفارش #${widget.order.id ?? '-'}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
               ),
               Text(
                 DateFormat('yyyy/MM/dd HH:mm').format(widget.order.date),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700),
               ),
               Text(
                 '${widget.order.total.toStringAsFixed(0)} تومان',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   color:
                       isPaid ? Colors.green.shade700 : Colors.orange.shade700,

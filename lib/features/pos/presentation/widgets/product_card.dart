@@ -1,3 +1,4 @@
+import 'package:barista_notes/core/constants/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
@@ -30,6 +31,9 @@ class ProductCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.r),
       child: Card(
+        color: AppColors.backGround.withOpacity(
+          0.9,
+        ), // <-- This sets the card's background color
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
@@ -97,7 +101,7 @@ class ProductCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
               child: Text(
                 name,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -107,7 +111,7 @@ class ProductCard extends StatelessWidget {
               child: Text(
                 "${price.toStringAsFixed(0)} تومان",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.brown,
+                  color: const Color.fromARGB(255, 92, 65, 55),
                   fontWeight: FontWeight.bold,
                 ),
               ),

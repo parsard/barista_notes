@@ -9,6 +9,7 @@ import 'package:barista_notes/features/shopping_list/presentation/providers/shop
 import 'package:barista_notes/features/shopping_list/presentation/widgets/shopping_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../widgets/category_bar.dart';
 import '../widgets/product_card.dart';
 
@@ -32,7 +33,6 @@ class _PosPageState extends ConsumerState<PosPage> {
       backgroundColor: AppColors.backGround,
       body: Row(
         children: [
-          // ستون دسته‌بندی
           categoriesAsync.when(
             data: (categories) {
               final categoryIconsMap = <int, IconData>{
@@ -62,7 +62,7 @@ class _PosPageState extends ConsumerState<PosPage> {
               }
 
               return SizedBox(
-                width: 160, // عرض ثابت برای جلوگیری از فشردگی
+                width: 160,
                 child: CategoryBar(
                   categories: allCategories.map((c) => c.title).toList(),
                   selectedCategory:
@@ -93,7 +93,6 @@ class _PosPageState extends ConsumerState<PosPage> {
                 ),
           ),
 
-          // ستون محصولات
           Expanded(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 120),
@@ -151,11 +150,10 @@ class _PosPageState extends ConsumerState<PosPage> {
             ),
           ),
 
-          // ستون سبد خرید
           Container(
             width: 300,
             color: AppColors.brownLess,
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0.w),
             child: ShoppingListView(
               noteController: noteController,
               onConfirm: () async {
