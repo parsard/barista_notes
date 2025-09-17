@@ -1,6 +1,8 @@
+import 'package:barista_notes/core/constants/color.dart';
 import 'package:barista_notes/features/shopping_list/presentation/widgets/shopping_list_item_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../providers/shopping_list_provider.dart';
 
 class ShoppingListView extends ConsumerWidget {
@@ -40,14 +42,34 @@ class ShoppingListView extends ConsumerWidget {
           children: [
             Expanded(
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF8D6748),
+                ),
                 onPressed: onConfirm,
-                child: const Text('تأیید سفارش'),
+                child: Text(
+                  'تأیید سفارش',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFE3D6C9),
+                  ),
+                ),
               ),
             ),
             Expanded(
               child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Color(0xFFFFF8E1),
+                ),
                 onPressed: onCancel,
-                child: const Text('منصرف شدن'),
+                child: Text(
+                  'منصرف شدن',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF5C4137),
+                  ),
+                ),
               ),
             ),
           ],
