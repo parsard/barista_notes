@@ -54,6 +54,58 @@
 
 ---
 
+## 🧩 DAO و Repository Implementations
+
+### DAO (Data Access Object)
+DAOها مسئول ارتباط مستقیم با پایگاه داده Drift هستند.
+
+**ویژگی‌ها:**
+- مرتبط با یک جدول یا مجموعه جدول‌های مرتبط
+- حاوی Queryهای پایگاه داده (Select, Insert, Update, Delete)
+- بدون وابستگی به Domain یا UI
+
+**نمونه‌ها در پروژه:**
+
+#### `ProductsDao`
+- `Future<List<Product>> getAllProducts()` → لیست همه محصولات
+- `Stream<List<Product>> watchAllProducts()` → استریم محصولات
+- `Future<int> insertProduct(ProductsCompanion companion)` → افزودن محصول
+- `Future<bool> updateProduct(ProductsCompanion companion)` → بروزرسانی محصول
+- `Future<int> deleteProduct(int id)` → حذف محصول
+
+#### `OrdersDao`
+- `Future<int> createOrder(OrdersCompanion order)` → ایجاد سفارش
+- `Future<List<Order>> getAllOrders()` → لیست سفارش‌ها
+- `Future<List<OrderItem>> getItemsByOrderId(int orderId)` → آیتم‌های سفارش خاص
+- `Future<int> deleteOrder(int id)` → حذف سفارش
+
+---
+
+### Repository Implementations (Impl)
+Repository Impl بین **Domain** و **DAO** قرار دارد و مسئول **تبدیل داده‌ها** است.
+
+**وظایف:**
+- تبدیل Entityهای Domain به مدل Drift (Companionها) و برعکس
+- ایجاد واسط قابل تعویض برای دیتاسورس‌های مختلف (مانند SQL، API، یا حافظه محلی)
+
+**نمونه‌ها در پروژه:**
+
+#### `ProductsRepositoryImpl`
+- استفاده از `ProductsDao`
+- تبدیل `ProductEntity` ↔ `ProductsCompanion`
+- مثال:
+```dart
+@override
+Future<void> addProduct(ProductEntity product) async {
+  final companion = ProductsCompanion.insert(
+name: product.name,
+price: product.price,
+// ...
+  );
+  await _productsDao.insertProduct(companion);
+}
+
+---
 ## 📦 وابستگی‌ها (Dependencies)
 ```yaml
 dependencies:
