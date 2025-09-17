@@ -1,14 +1,13 @@
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
+
 import 'package:pdf/widgets.dart' as pw;
 import 'package:barista_notes/features/pos/domain/entities/order.dart';
 
 class OrderPdfBuilder {
   static Future<pw.Document> build(OrderEntity order) async {
-    // 1. Load font
     final fontData = await rootBundle.load(
-      'lib/assets/fonts/Vazirmatn-VariableFont_wght.ttf', // مسیر صحیح فایل
+      'lib/assets/fonts/Vazirmatn-VariableFont_wght.ttf',
     );
     final ttf = pw.Font.ttf(fontData);
 
@@ -16,7 +15,7 @@ class OrderPdfBuilder {
 
     pdf.addPage(
       pw.Page(
-        textDirection: pw.TextDirection.rtl, // کل صفحه RTL
+        textDirection: pw.TextDirection.rtl,
         theme: pw.ThemeData.withFont(
           base: ttf,
           bold: ttf,
@@ -41,11 +40,9 @@ class OrderPdfBuilder {
               pw.Text('اقلام سفارش:', style: pw.TextStyle(fontSize: 16)),
               pw.SizedBox(height: 8),
 
-              // جدول دستی با RTL کامل
               pw.Table(
                 border: pw.TableBorder.all(),
                 children: [
-                  // هدر جدول
                   pw.TableRow(
                     children:
                         ['قیمت', 'تعداد', 'محصول'].map((header) {
