@@ -25,6 +25,10 @@ class ShoppingListNotifier extends StateNotifier<List<ShoppingListItemEntity>> {
     state = _addItemUC(currentList: state, product: product);
   }
 
+  void removeItem(int productId) {
+    state = state.where((item) => item.product.id != productId).toList();
+  }
+
   void increaseQuantity(int productId) {
     state = _increaseUC(currentList: state, productId: productId);
   }

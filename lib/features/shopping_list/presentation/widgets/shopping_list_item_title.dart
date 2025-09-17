@@ -45,11 +45,20 @@ class ShoppingListItemTile extends ConsumerWidget {
               icon: const Icon(Icons.remove, color: AppColors.cancel),
             ),
             IconButton(
-              visualDensity: VisualDensity.compact,
-              constraints: const BoxConstraints(),
               padding: EdgeInsets.zero,
               onPressed: () => notifier.increaseQuantity(item.product.id!),
               icon: const Icon(Icons.add, color: AppColors.cancel),
+            ),
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              constraints: const BoxConstraints(),
+              padding: EdgeInsets.zero,
+              onPressed: () => notifier.removeItem(item.product.id!),
+              icon: const Icon(
+                Icons.delete,
+                color: Color.fromARGB(255, 227, 98, 0),
+              ),
+              tooltip: 'حذف آیتم',
             ),
           ],
         ),
